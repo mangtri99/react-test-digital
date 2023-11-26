@@ -2,14 +2,15 @@ import {useEffect, useState} from 'react'
 import useFetch from './useFetch'
 import { useSearchParams } from 'react-router-dom'
 import { APIResponsePagination, User } from '@/lib/types'
+import { useToast } from '@/components/ui/use-toast'
 
 
 function useUserListState() {
   const { $fetch } = useFetch()
   const [users, setUsers] = useState<APIResponsePagination<User[]>>()
   const [loading, setLoading] = useState(false)
-  const [error, setError] = useState()
   const [searchParams, setSearchParams] = useSearchParams()
+  const { toast } = useToast()
   const [query, setQuery] = useState({
     page: searchParams.get('page') || undefined,
     search: searchParams.get('search') || undefined,
@@ -28,10 +29,34 @@ function useUserListState() {
         setUsers(res.data)
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
       } catch (err: any) {
-        setError(err.response.data.message)
+        toast({
+          title: "Error",
+          description: err.response.data.message,
+          variant: 'destructive'
+        })
       } finally {
         setLoading(false)
       }
+  }
+
+  const deleteUser = async (id: number) => {
+    try {
+      await $fetch(`/user/${id}`, {
+        method: 'DELETE',
+      })
+      toast({
+        title: "Success",
+        description: 'User deleted successfully',
+      })
+      await fetchUsers()
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    } catch (err: any) {
+      toast({
+        title: "Error",
+        description: err.response.data.message,
+        variant: 'destructive'
+      })
+    }
   }
 
   // refetch users when query changes
@@ -75,14 +100,13 @@ function useUserListState() {
     })
   }
 
-
   return {
     query,
     setQuery,
     users,
     loading,
-    error,
     handleSortOrder,
+    deleteUser,
   }
 }
 

@@ -29,10 +29,29 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useState } from "react";
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 
 function Index() {
-  const { users, loading, query, setQuery, handleSortOrder } =
+  const { users, loading, query, setQuery, handleSortOrder, deleteUser } =
     useUserListState();
+  const [selectedId, setSelectedId] = useState<number>();
+  const [openConfirm, setOpenConfirm] = useState(false);
+
+  function confirmDelete(id: number) {
+    setSelectedId(id);
+    setOpenConfirm(true);
+  }
+
   return (
     <>
       <div>
@@ -213,7 +232,12 @@ function Index() {
                       <Pencil className="h-4 w-4" />
                     </Link>
                   </Button>
-                  <Button variant="outline" size="icon">
+                  <Button
+                    variant="outline"
+                    size="icon"
+                    type="button"
+                    onClick={() => confirmDelete(user.id)}
+                  >
                     <Trash className="h-4 w-4" />
                   </Button>
                 </TableCell>
@@ -232,6 +256,30 @@ function Index() {
       {/* Pagination */}
       <hr className="border-t border-slate-900 dark:border-slate-50 my-5" />
       {users?.data && users?.data?.length > 0 && <Pagination />}
+      <AlertDialog open={openConfirm}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Are you absolutely sure?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This action cannot be undone. This will permanently delete your
+              account and remove your data from our servers.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel onClick={() => setOpenConfirm(false)}>
+              Cancel
+            </AlertDialogCancel>
+            <AlertDialogAction
+              onClick={() => {
+                deleteUser(selectedId!);
+                setOpenConfirm(false);
+              }}
+            >
+              Continue
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </>
   );
 }
