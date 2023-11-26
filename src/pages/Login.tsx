@@ -65,6 +65,9 @@ function Login() {
           </CardDescription>
         </CardHeader>
         <CardContent>
+          <div className="text-xs dark:text-slate-50 text-slate-900 mb-4">
+            <p>Test Account : test@example.com / password</p>
+          </div>
           {error && (
             <Alert variant="destructive" className="p-4 mb-4">
               <AlertCircle className="h-4 w-4" />
