@@ -15,3 +15,5 @@ After clone this project, simply run
     pnpm run dev
 ```
 Access application http://localhost:5173/
+
+Or you can live access here https://react-test-digital.vercel.app/
